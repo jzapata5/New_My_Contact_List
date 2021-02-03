@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         });
 
         final EditText editCity = findViewById(R.id.editCity);
-        editStreetAddress.addTextChangedListener(new TextWatcher() {
+        editCity.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 currentContact.setCity(editCity.getText().toString()); // This code is executed when the user ends editing of the EditText.
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         });
 
         final EditText editState = findViewById(R.id.editState); // this is final because it is used inside of the event loop (if you were wondering why variables are final)
-        editContactName.addTextChangedListener(new TextWatcher() {
+        editState.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 currentContact.setState(editState.getText().toString());
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         });
 
         final EditText editZipCode = findViewById(R.id.editZipCode); // this is final because it is used inside of the event loop (if you were wondering why variables are final)
-        editContactName.addTextChangedListener(new TextWatcher() {
+        editZipCode.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 currentContact.setZipCode(editZipCode.getText().toString());
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         });
 
         final EditText editPhone = findViewById(R.id.editHome); // this is final because it is used inside of the event loop (if you were wondering why variables are final)
-        editContactName.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
+        editPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 currentContact.setPhoneNumber(editPhone.getText().toString());
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         });
 
         final EditText editCell = findViewById(R.id.editCell); // this is final because it is used inside of the event loop (if you were wondering why variables are final)
-        editContactName.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
+        editCell.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 currentContact.setCellNumber(editCell.getText().toString());
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         });
 
         final EditText editEmail = findViewById(R.id.editEmail); // this is final because it is used inside of the event loop (if you were wondering why variables are final)
-        editContactName.addTextChangedListener(new TextWatcher() {
+        editEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 currentContact.setEmail(editEmail.getText().toString());
