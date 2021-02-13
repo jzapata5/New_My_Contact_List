@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editContactName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                currentContact.setContactName(editContactName.getText().toString());
+
             }
 
             @Override
@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
             @Override
             public void afterTextChanged(Editable s) {
+                currentContact.setContactName(editContactName.getText().toString());
             }
         });
 
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editStreetAddress.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                currentContact.setStreetAddress(editStreetAddress.getText().toString()); // This code is executed when the user ends editing of the EditText.
+                 // This code is executed when the user ends editing of the EditText.
             }
 
             @Override
@@ -115,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
             @Override
             public void afterTextChanged(Editable s) { // this is called after the user complete editin the data and leaves the editText box
+                currentContact.setStreetAddress(editStreetAddress.getText().toString());
             }
         });
 
@@ -122,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editCity.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                currentContact.setCity(editCity.getText().toString()); // This code is executed when the user ends editing of the EditText.
+
             }
 
             @Override
@@ -131,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
             @Override
             public void afterTextChanged(Editable s) { // this is called after the user complete editin the data and leaves the editText box
+                currentContact.setCity(editCity.getText().toString()); // This code is executed when the user ends editing of the EditText.
             }
         });
 
@@ -138,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editState.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                currentContact.setState(editState.getText().toString());
             }
 
             @Override
@@ -147,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
             @Override
             public void afterTextChanged(Editable s) {
+                currentContact.setState(editState.getText().toString());
+
             }
         });
 
@@ -154,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editZipCode.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                currentContact.setZipCode(editZipCode.getText().toString());
             }
 
             @Override
@@ -163,6 +166,8 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
             @Override
             public void afterTextChanged(Editable s) {
+                currentContact.setZipCode(editZipCode.getText().toString());
+
             }
         });
 
@@ -170,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                currentContact.setPhoneNumber(editPhone.getText().toString());
             }
 
             @Override
@@ -179,6 +183,8 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
             @Override
             public void afterTextChanged(Editable s) {
+                currentContact.setPhoneNumber(editPhone.getText().toString());
+
             }
         });
 
@@ -186,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editCell.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                currentContact.setCellNumber(editCell.getText().toString());
             }
 
             @Override
@@ -195,6 +200,8 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
             @Override
             public void afterTextChanged(Editable s) {
+                currentContact.setCellNumber(editCell.getText().toString());
+
             }
         });
 
@@ -202,7 +209,6 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                currentContact.setEmail(editEmail.getText().toString());
             }
 
             @Override
@@ -211,6 +217,8 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
             @Override
             public void afterTextChanged(Editable s) {
+                currentContact.setEmail(editEmail.getText().toString());
+
             }
         });
     }
