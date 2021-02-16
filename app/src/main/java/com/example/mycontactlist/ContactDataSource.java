@@ -114,11 +114,11 @@ public class ContactDataSource {
         return contactNames;
     }
 
-    public ArrayList<Contact> getContacts() {
+    public ArrayList<Contact> getContacts(String sortField, String sortOrder) {
         ArrayList<Contact> contacts = new ArrayList<Contact>();
 
         try {
-            String query = "SELECT * FROM contact;";
+            String query = "SELECT * FROM contact ORDER BY " + sortField + " " + sortOrder + ";";
             Cursor cursor = database.rawQuery(query, null);
 
             Contact newContact;
@@ -146,6 +146,41 @@ public class ContactDataSource {
             contacts = new ArrayList<Contact>();
         }
         return contacts;
+    }
+
+    public Contact getSpecifiedContact(int contactId) {
+        Contact contact = new Contact();
+        String query = "SELECT * FROM contact WHERE _id =" + contactId;
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            contact.setContactID(cursor.getInt(0));
+            contact.setContactName(cursor.getString(1));
+            contact.setStreetAddress(cursor.getString(2));
+            contact.setCity(cursor.getString(3));
+            contact.setState(cursor.getString(4));
+            contact.setZipCode(cursor.getString(5));
+            contact.setPhoneNumber(cursor.getString(6));
+            contact.setCellNumber(cursor.getString(7));
+            contact.setEmail(cursor.getString(8));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.valueOf(cursor.getString(9)));
+            contact.setBirthday(calendar);
+
+            cursor.close();
+        }
+        return contact;
+    }
+
+    public boolean deleteContact(int contactId) {
+        boolean didDelete = false;
+
+        try {
+            didDelete = database.delete("contact", "_id=" + contactId, null) > 0;
+        }
+        catch (Exception e){ //does nothing
+        }
+        return didDelete;
     }
 
 }

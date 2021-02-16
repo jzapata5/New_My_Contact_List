@@ -11,11 +11,10 @@
         android:theme="@style/Theme.MyContactList">
         <activity android:name=".ContactSettingsActivity"></activity>
         <activity android:name=".ContactMapActivity" />
-        <activity android:name=".ContactListActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" />
+        <activity android:name=".ContactListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
