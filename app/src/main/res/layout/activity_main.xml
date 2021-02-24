@@ -176,7 +176,7 @@
                 android:ems="5"
                 android:hint="@string/zipcode"
                 android:imeOptions="actionNext"
-                android:inputType="number"
+                android:inputType="phone"
                 android:maxLength="5"
                 android:nextFocusDown="@+id/editHome"
                 app:layout_constraintStart_toEndOf="@+id/editState"

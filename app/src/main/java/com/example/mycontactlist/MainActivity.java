@@ -74,9 +74,14 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         ImageButton contactList = findViewById(R.id.imageButtonMap); // Same as above
         contactList.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ContactMapActivity.class);
+            if(currentContact.getContactID() == -1) {
+                Toast.makeText(getBaseContext(), "Contact must be saved before it can be mapped", Toast.LENGTH_LONG).show();
+            }
+            else {
+                intent.putExtra("contactId", currentContact.getContactID());
+            }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent); // And listen
-            setForEditing(false);
+            startActivity(intent);
         });
     }
 
