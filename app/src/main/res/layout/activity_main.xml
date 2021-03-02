@@ -111,7 +111,8 @@
                 android:imeOptions="actionNext"
                 android:inputType="textPersonName"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textContact" />
+                app:layout_constraintTop_toBottomOf="@+id/textContact"
+                app:layout_constraintEnd_toStartOf="@+id/imageContact" />
 
             <TextView
                 android:id="@+id/textAddress"
@@ -293,6 +294,17 @@
                 android:text="Change"
                 app:layout_constraintBaseline_toBaselineOf="@id/textBirthday"
                 app:layout_constraintEnd_toEndOf="parent" />
+
+            <ImageButton
+                android:id="@+id/imageContact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginRight="10dp"
+                android:backgroundTint="#F9F9F9"
+                app:srcCompat="@drawable/addgroup"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/textContact"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

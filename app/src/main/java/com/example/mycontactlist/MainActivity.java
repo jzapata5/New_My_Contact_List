@@ -1,14 +1,25 @@
  package com.example.mycontactlist;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import com.example.mycontactlist.DatePickerDialog.SaveDateListener;
+import com.google.android.material.snackbar.Snackbar;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.media.Image;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -35,6 +46,9 @@ import static java.text.DateFormat.*;
 public class MainActivity extends AppCompatActivity implements SaveDateListener {
 
     private Contact currentContact;
+    final int PERMISSION_REQUEST_PHONE = 102;
+    final int PERMISSION_REQUEST_CAMERA = 103;
+    final int CAMERA_REQUEST = 1888;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +59,17 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         initToggleButton();
         initSettingsButton();
         initChangeDateButton();
+        initCallFunction();
+        initImageButton();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) { //this is when you click on someone's contact via List
             initContact(extras.getInt("contactId"));
+
         }
         else {
             currentContact = new Contact(); // this will be for the start menu
+
         }
 
         setForEditing(false);
@@ -301,6 +319,11 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         Button buttonChange = findViewById(R.id.btnBirthday);
         Button buttonSave = findViewById(R.id.buttonSave);
 
+        //for camera
+        ImageButton picture = findViewById(R.id.imageContact);
+        picture.setEnabled(enabled);
+        //
+
         editName.setEnabled(enabled);
         editAddress.setEnabled(enabled);
         editCity.setEnabled(enabled);
@@ -314,10 +337,14 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
         if (enabled) {
             editName.requestFocus();
+            editHome.setInputType(InputType.TYPE_CLASS_PHONE);
+            editCell.setInputType(InputType.TYPE_CLASS_PHONE);
         }
         else {
             ScrollView s = findViewById(R.id.scrollView);
             s.fullScroll(ScrollView.FOCUS_UP);
+            editHome.setInputType(InputType.TYPE_NULL);
+            editCell.setInputType(InputType.TYPE_NULL);
         }
     }
 
@@ -334,7 +361,6 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
     @Override
     public void didFinishDatePickerDialog(Calendar selectedTime) {
         TextView birthDay = findViewById(R.id.textBirthday);
-        Log.i("Hello there", "hello");
         birthDay.setText(DateFormat.format("MM/dd/yyyy", selectedTime));
         currentContact.setBirthday(selectedTime);
     }
@@ -346,7 +372,6 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         try {
             ds.open();
             currentContact = ds.getSpecifiedContact(id);
-            Log.i("tag", "-----------------------------------------\n");
 
             ds.close();
         }
@@ -373,6 +398,166 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editCell.setText(currentContact.getCellNumber());
         editEmail.setText(currentContact.getEmail());
         birthDay.setText(DateFormat.format("MM/dd/yyyy",currentContact.getBirthday().getTimeInMillis()).toString());
+
+        ImageButton picture = (ImageButton) findViewById(R.id.imageContact);
+        if (currentContact.getPicture() != null) {
+            picture.setImageBitmap(currentContact.getPicture());
+        }
+        else {
+            picture.setImageResource(R.drawable.addgroup);
+        }
     }
 
+    private void initCallFunction() {
+        EditText editPhone = (EditText) findViewById(R.id.editHome);
+        editPhone.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                checkPhonePermission(currentContact.getPhoneNumber());
+                return false;
+            }
+        });
+
+        EditText editCell = (EditText) findViewById(R.id.editCell);
+        editCell.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                checkPhonePermission(currentContact.getCellNumber());
+                return false;
+            }
+        });
+    }
+
+    private void checkPhonePermission(String phoneNumber) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, //this whole block checks if permission was already given before
+                    Manifest.permission.CALL_PHONE) != //if so, show location
+                    PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale // this block sees if permission has been denied before, if it has, then it'll explain why permission is needed
+                        (MainActivity.this,
+                                Manifest.permission.CALL_PHONE)) {
+                    Snackbar.make(findViewById(R.id.name), // this whole block asks for permission
+                            "MyContactList requires this permission to call from " +
+                                    "your contacts", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("Ok", new View.OnClickListener() {
+                                @Override
+                                public void onClick (View view) {
+                                    ActivityCompat.requestPermissions(
+                                            MainActivity.this,
+                                            new String[]{Manifest.permission.CALL_PHONE},
+                                            PERMISSION_REQUEST_PHONE);
+                                }
+                            }).show();
+                }
+                else {
+                    ActivityCompat.requestPermissions(
+                            MainActivity.this,
+                            new String[]{Manifest.permission.CALL_PHONE},
+                            PERMISSION_REQUEST_PHONE);
+                }
+            }
+            else {
+                callContact(phoneNumber);
+            }
+        }
+        else {
+            callContact(phoneNumber);
+            }
+        }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_PHONE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(MainActivity.this, "You may now call from this app.", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "You may not call from this app.", Toast.LENGTH_LONG).show();
+                }
+            }
+            case PERMISSION_REQUEST_CAMERA: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    takePhoto();
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "You may not call from this app.", Toast.LENGTH_LONG).show();
+                }
+            }
+            return;
+        }
+    }
+
+    private void callContact (String phoneNumber) {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel: " + phoneNumber));
+
+        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        else {
+            startActivity(intent);
+
+        }
+    }
+
+    private void initImageButton() {
+        ImageButton ib = findViewById(R.id.imageContact);
+        ib.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, //this whole block checks if permission was already given before
+                            Manifest.permission.CAMERA) != //if so, show location
+                            PackageManager.PERMISSION_GRANTED) {
+                        if (ActivityCompat.shouldShowRequestPermissionRationale // this block sees if permission has been denied before, if it has, then it'll explain why permission is needed
+                                (MainActivity.this,
+                                        Manifest.permission.CAMERA)) {
+                            Snackbar.make(findViewById(R.id.name), // this whole block asks for permission
+                                    "MyContactList requires this permission to take pictures ", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Ok", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick (View view) {
+                                            ActivityCompat.requestPermissions(
+                                                    MainActivity.this,
+                                                    new String[]{Manifest.permission.CAMERA},
+                                                    PERMISSION_REQUEST_CAMERA);
+                                        }
+                                    }).show();
+                        }
+                        else {
+                            ActivityCompat.requestPermissions(
+                                    MainActivity.this,
+                                    new String[]{Manifest.permission.CAMERA},
+                                    PERMISSION_REQUEST_CAMERA);
+                        }
+                    }
+                    else {
+                        takePhoto();
+                    }
+                }
+                else {
+                    takePhoto();
+                }
+            }
+        });
+    }
+
+    public void takePhoto() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                Bitmap scaledPhoto = Bitmap.createScaledBitmap(photo, 144, 144, true);
+                ImageButton imageContact = (ImageButton) findViewById(R.id.imageContact);
+                imageContact.setImageBitmap(scaledPhoto);
+                currentContact.setPicture(scaledPhoto);
+            }
+        }
+    }
 }
