@@ -2,6 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mycontactlist">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+
+    <permission android:name="com.example.mycontactlist.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.example.mycontactlist.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.Manifest.Permission.CALL_PHONE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/boy"
@@ -9,6 +22,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyContactList">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC8OROfkVrh6Boqu_O4_jhY5r8Hz8-Kh2w" />
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+
         <activity android:name=".ContactSettingsActivity"></activity>
         <activity android:name=".ContactMapActivity" />
         <activity android:name=".MainActivity" />

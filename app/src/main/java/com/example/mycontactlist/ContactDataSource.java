@@ -91,6 +91,8 @@ public class ContactDataSource {
         return lastId;
     }
 
+
+    //cursor holds the results of the query
     public ArrayList<String> getContactName() {
         ArrayList<String> contactNames = new ArrayList<>();
 
@@ -114,6 +116,7 @@ public class ContactDataSource {
         return contactNames;
     }
 
+    //returns the data as Contact objects in an ArrayList
     public ArrayList<Contact> getContacts(String sortField, String sortOrder) {
         ArrayList<Contact> contacts = new ArrayList<Contact>();
 

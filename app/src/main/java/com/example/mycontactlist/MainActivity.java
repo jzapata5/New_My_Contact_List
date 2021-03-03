@@ -74,30 +74,35 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
     private void initListButton() {
         ImageButton contactList = findViewById(R.id.imageButtonList); // Variable to hold the ImageButton
-        // Listener is added to the ImageButton to make it respond to different things
+        // listener belongs to  ImageButton that allows it to responds
         contactList.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ContactListActivity.class); // A mew Intent is created, the Intent's constructors requires reference to the current activity and know what activity to start
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // An Intent flag is set to alert the operating system to not make multiple copes of the same activity
-            startActivity(intent); // And listen
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Intent flag is alert the op system to not create more than 1 copy
+            startActivity(intent);
         });
     }
 
     private void initMapButton() {
-        ImageButton contactList = findViewById(R.id.imageButtonMap); // Same as above
+        ImageButton contactList = findViewById(R.id.imageButtonMap);
         contactList.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ContactMapActivity.class);
+            if (currentContact.getContactID() == -1) {
+                Toast.makeText(getBaseContext(), "Contact must be saved before it can be mapped", Toast.LENGTH_LONG).show();
+            } else {
+                intent.putExtra("contactid", currentContact.getContactID());
+            }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent); // And listen
+            startActivity(intent);
             setForEditing(false);
         });
     }
 
     private void initSettingsButton() {
-        ImageButton contactList = findViewById(R.id.imageButtonSettings); // Same as above
+        ImageButton contactList = findViewById(R.id.imageButtonSettings);
         contactList.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ContactSettingsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent); // And listen
+            startActivity(intent);
         });
     }
 

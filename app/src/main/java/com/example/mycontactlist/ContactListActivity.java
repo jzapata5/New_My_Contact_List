@@ -24,6 +24,9 @@ public class ContactListActivity extends AppCompatActivity {
     ArrayList<Contact> contacts;
     ContactAdapter contactAdapter;
 
+    //refrence to view holder
+    //gets position of the view holder on the list
+    //then later we will pass a Contact ID for editing
     private View.OnClickListener onItemClickListener = view -> {
         RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
         int position = viewHolder.getAdapterPosition();

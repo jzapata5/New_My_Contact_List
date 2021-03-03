@@ -7,6 +7,7 @@
     tools:context=".ContactSettingsActivity">
 
     <LinearLayout
+        android:id="@+id/navbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/navbar_background"
@@ -21,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/button_to_display_a_list_of_contacts"
-            app:srcCompat="@drawable/paperclip" />
+            app:srcCompat="@android:drawable/ic_menu_agenda" />
 
         <ImageButton
             android:id="@+id/imageButtonMap"
@@ -29,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/show_map_of_contact_location"
-            app:srcCompat="@drawable/placeholder" />
+            app:srcCompat="@android:drawable/ic_dialog_map" />
 
         <ImageButton
             android:id="@+id/imageButtonSettings"
@@ -37,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/show_settings"
-            app:srcCompat="@drawable/settings" />
+            app:srcCompat="@android:drawable/ic_menu_preferences" />
     </LinearLayout>
 
     <TextView
