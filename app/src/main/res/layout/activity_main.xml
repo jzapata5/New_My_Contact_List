@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/button_to_display_a_list_of_contacts"
-            app:srcCompat="@drawable/paperclip" />
+            app:srcCompat="@android:drawable/ic_menu_agenda" />
 
         <ImageButton
             android:id="@+id/imageButtonMap"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/show_map_of_contact_location"
-            app:srcCompat="@drawable/placeholder" />
+            app:srcCompat="@android:drawable/ic_dialog_map" />
 
         <ImageButton
             android:id="@+id/imageButtonSettings"
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/show_settings"
-            app:srcCompat="@drawable/settings" />
+            app:srcCompat="@android:drawable/ic_menu_preferences" />
     </LinearLayout>
 
     <LinearLayout
@@ -293,6 +293,17 @@
                 android:text="Change"
                 app:layout_constraintBaseline_toBaselineOf="@id/textBirthday"
                 app:layout_constraintEnd_toEndOf="parent" />
+
+            <ImageButton
+                android:id="@+id/imageContact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginRight="10dp"
+                android:backgroundTint="#F9F9F9"
+                app:srcCompat="@drawable/addgroup"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/textContact"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

@@ -18,6 +18,7 @@ public class ContactMapActivity extends AppCompatActivity {
         initSettingsButton();
     }
 
+
     private void initListButton() {
         ImageButton contactList = findViewById(R.id.imageButtonList); // Variable to hold the ImageButton
         contactList.setOnClickListener(new View.OnClickListener() { // Listener is added to the ImageButton to make it respond to different things

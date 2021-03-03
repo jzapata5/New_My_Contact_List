@@ -4,14 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -58,6 +62,27 @@ public class ContactListActivity extends AppCompatActivity {
 
         initDeleteSwitch();
         initAddContactButton();
+
+        //BroadcastReceiver receives intents sent by other activities both within and outside the app
+        BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                //intent concerning battery level is changed to a double
+                //intent concerning levelScale is changed to a double as well
+                double batteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL,0);
+                double levelScale = intent.getIntExtra(BatteryManager.EXTRA_SCALE,0);
+                int batteryPercent = (int) Math.floor(batteryLevel / levelScale * 100);
+                TextView textBatteryState = (TextView)findViewById(R.id.textBatteryLevel);
+                textBatteryState.setText(batteryPercent + "%");
+            }
+        };
+
+        //the filter looks for Battery Status changed intent
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+
+        //Broadcast receiver is registered, which means app is told to listen for battery status intents and handle them here
+        registerReceiver(batteryReceiver, filter);
     }
 
     @Override

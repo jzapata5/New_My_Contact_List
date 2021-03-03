@@ -1,6 +1,7 @@
 package com.example.mycontactlist;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +24,20 @@ public class ContactAdapter extends RecyclerView.Adapter{
 
         public TextView textViewContact;
         public TextView textPhone;
+        public TextView textStreetAddress;
+        public TextView textCity;
+        public TextView textState;
+        public TextView textZipCode;
         public Button deleteButton;
 
         public ContactViewHolder(@NonNull View itemView) { // @NonNull means that the parameter cannot be null
             super(itemView);
             textViewContact = itemView.findViewById(R.id.textContactName);
             textPhone = itemView.findViewById(R.id.textPhoneNumber);
+            textStreetAddress = itemView.findViewById(R.id.textStreetAddress);
+            textCity = itemView.findViewById(R.id.textViewCity);
+            textState = itemView.findViewById(R.id.textViewState);
+            textZipCode = itemView.findViewById(R.id.textViewZipCode);
             deleteButton = itemView.findViewById(R.id.buttonDeleteContact);
             itemView.setTag(this);
             itemView.setOnClickListener(mOnItemClickListener);
@@ -40,6 +49,23 @@ public class ContactAdapter extends RecyclerView.Adapter{
 
         public TextView getPhoneTextView() {
             return textPhone;
+        }
+
+        public TextView getTextStreetAddress() {
+            return textStreetAddress;
+        }
+
+        public TextView getTextCity() {
+            return textCity;
+        }
+
+        public TextView getTextState() {
+            return textState;
+        }
+
+
+        public TextView getTextZipCode() {
+            return textZipCode;
         }
 
         public Button getDeleteButton() {
@@ -68,8 +94,21 @@ public class ContactAdapter extends RecyclerView.Adapter{
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         ContactViewHolder cvh = (ContactViewHolder) holder;
+
         cvh.getContactTextView().setText(contactData.get(position).getContactName());
         cvh.getPhoneTextView().setText(contactData.get(position).getPhoneNumber());
+        cvh.getTextStreetAddress().setText(contactData.get(position).getStreetAddress());
+        cvh.getTextCity().setText(contactData.get(position).getCity());
+        cvh.getTextState().setText(contactData.get(position).getState());
+        cvh.getTextZipCode().setText(contactData.get(position).getZipCode());
+
+        //position in the list is even
+        if (position % 2 == 0) {
+            cvh.getContactTextView().setTextColor(Color.RED);
+        }
+        else {
+            cvh.getContactTextView().setTextColor(Color.BLUE);
+        }
 
         if (isDeleting) {
             cvh.getDeleteButton().setVisibility(View.VISIBLE);
@@ -80,6 +119,7 @@ public class ContactAdapter extends RecyclerView.Adapter{
         else {
             cvh.getDeleteButton().setVisibility(View.INVISIBLE);
         }
+
     }
 
     @Override
