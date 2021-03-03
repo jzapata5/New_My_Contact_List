@@ -318,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         EditText editEmail = findViewById(R.id.editEmail);
         Button buttonChange = findViewById(R.id.btnBirthday);
         Button buttonSave = findViewById(R.id.buttonSave);
+        ImageButton picture = findViewById(R.id.imageContact);
 
         //for camera
         ImageButton picture = findViewById(R.id.imageContact);
@@ -334,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editEmail.setEnabled(enabled);
         buttonChange.setEnabled(enabled);
         buttonSave.setEnabled(enabled);
+        picture.setEnabled(enabled);
 
         if (enabled) {
             editName.requestFocus();
@@ -388,6 +390,13 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         EditText editCell= findViewById(R.id.editCell);
         EditText editEmail = findViewById(R.id.editEmail);
         TextView birthDay = findViewById(R.id.textBirthday);
+        ImageButton picture = (ImageButton) findViewById(R.id.imageContact);
+
+        if(currentContact.getPicture() != null) {
+            picture.setImageBitmap(currentContact.getPicture());
+        } else {
+            picture.setImageResource(R.drawable.unnamed);
+        }
 
         editName.setText(currentContact.getContactName());
         editAddress.setText(currentContact.getStreetAddress());
@@ -560,4 +569,69 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
             }
         }
     }
+
+    private void initImageButton() {
+        ImageButton ib = findViewById(R.id.imageContact);
+        ib.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (ContextCompat.checkSelfPermission(MainActivity.this,
+                            Manifest.permission.CAMERA) !=
+                    PackageManager.PERMISSION_GRANTED) {
+
+                        if (ActivityCompat.shouldShowRequestPermissionRationale
+                                (MainActivity.this, android.Manifest.permission.CAMERA)) {
+                            Snackbar.make(findViewById(R.id.name),
+                            "The app needs permission to take pictures",
+                            Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("OK", new View.OnClickListener() {
+
+                                @Override
+                                public void onClick(View view) {
+
+                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]
+                                            {Manifest.permission.CAMERA},
+                                            PERMISSION_REQUEST_CAMERA);
+                                }
+                            })
+                                    .show();
+                        } else {
+                            ActivityCompat.requestPermissions(MainActivity.this,
+                                    new String[] {android.Manifest.permission.CAMERA},
+                                    PERMISSION_REQUEST_CAMERA);
+                        }
+                    }
+
+                    else {
+                        takePhoto();
+                    }
+                } else {
+                    takePhoto();
+                }
+            }
+        });
+    }
+
+    public void takePhoto() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
+
+    //receives a request code that was sent to the camera
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST) {
+            //checked if the camera returned with a picture
+            if (resultCode == RESULT_OK) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                Bitmap scaledPhoto = Bitmap.createScaledBitmap(photo, 144, 144, true);
+                ImageButton imageContact = (ImageButton) findViewById(R.id.imageContact);
+                imageContact.setImageBitmap(scaledPhoto);
+                currentContact.setPicture(scaledPhoto);
+            }
+        }
+    }
+
 }

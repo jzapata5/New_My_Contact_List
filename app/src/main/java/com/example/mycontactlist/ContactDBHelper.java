@@ -9,7 +9,7 @@ public class ContactDBHelper extends SQLiteOpenHelper { // The recommended appro
     // Database Helper class whose only function is to provide for the creation, modification, and deletion of tables in the database.
 
     private static final String DATABASE_NAME = "mycontacts.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String CREATE_TABLE_CONTACT = "CREATE TABLE contact(" +
                                                         "_id integer primary key autoincrement," +
                                                         "contactname text not null, " +
