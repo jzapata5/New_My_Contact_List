@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +20,6 @@ import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -35,19 +33,16 @@ import android.view.View.*;
 
 import android.text.format.DateFormat;
 
-import org.w3c.dom.Text;
 
 import java.util.Calendar;
-import java.util.Date;
 
-import static android.text.format.DateFormat.format;
-import static java.text.DateFormat.*;
 
 public class MainActivity extends AppCompatActivity implements SaveDateListener {
 
     private Contact currentContact;
     final int PERMISSION_REQUEST_PHONE = 102;
     final int PERMISSION_REQUEST_CAMERA = 103;
+    final int PERMISSIONS_REQUEST_SEND_SMS = 1;
     final int CAMERA_REQUEST = 1888;
 
     @Override
@@ -59,7 +54,8 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         initToggleButton();
         initSettingsButton();
         initChangeDateButton();
-        initCallFunction();
+        //initCallFunction();
+        initTextFunction();
         initImageButton();
 
         Bundle extras = getIntent().getExtras();
@@ -75,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         setForEditing(false);
         initTextChangedEvents();
         initSaveButton();
+
 
     }
 
@@ -428,6 +425,62 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         });
     }
 
+    private void initTextFunction() {
+        EditText editPhone = (EditText) findViewById(R.id.editHome);
+        editPhone.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                checkTextPermission(currentContact.getPhoneNumber());
+                return false;
+            }
+        });
+
+        EditText editCell = (EditText) findViewById(R.id.editCell);
+        editCell.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                checkTextPermission(currentContact.getCellNumber());
+                return false;
+            }
+        });
+    }
+    private void checkTextPermission(String phoneNumber) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, //this whole block checks if permission was already given before
+                    Manifest.permission.SEND_SMS) != //if so, show location
+                    PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale // this block sees if permission has been denied before, if it has, then it'll explain why permission is needed
+                        (MainActivity.this,
+                                Manifest.permission.SEND_SMS)) {
+                    Snackbar.make(findViewById(R.id.name), // this whole block asks for permission
+                            "MyContactList requires this permission to text from " +
+                                    "your contacts", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("Ok", new View.OnClickListener() {
+                                @Override
+                                public void onClick (View view) {
+                                    ActivityCompat.requestPermissions(
+                                            MainActivity.this,
+                                            new String[]{Manifest.permission.SEND_SMS},
+                                            PERMISSIONS_REQUEST_SEND_SMS);
+                                }
+                            }).show();
+                }
+                else {
+                    ActivityCompat.requestPermissions(
+                            MainActivity.this,
+                            new String[]{Manifest.permission.SEND_SMS},
+                            PERMISSIONS_REQUEST_SEND_SMS);
+                }
+            }
+            else {
+                textContact(phoneNumber);
+            }
+        }
+        else {
+            textContact(phoneNumber);
+        }
+    }
+
     private void checkPhonePermission(String phoneNumber) {
         if (Build.VERSION.SDK_INT >= 23) {
             if (ContextCompat.checkSelfPermission(MainActivity.this, //this whole block checks if permission was already given before
@@ -484,8 +537,30 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
                     Toast.makeText(MainActivity.this, "You may not call from this app.", Toast.LENGTH_LONG).show();
                 }
             }
+            case PERMISSIONS_REQUEST_SEND_SMS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(MainActivity.this, "You may now text from this app.", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "You may not text from this app.", Toast.LENGTH_LONG).show();
+                }
+            }
             return;
         }
+    }
+
+    private void textContact (String phoneNumber) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setType("vnd.android-dir/mms-sms");
+        intent.setData(Uri.parse("smsto: " + phoneNumber));
+
+        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        else {
+            startActivity(intent);
+        }
+
     }
 
     private void callContact (String phoneNumber) {
@@ -497,7 +572,6 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         }
         else {
             startActivity(intent);
-
         }
     }
 

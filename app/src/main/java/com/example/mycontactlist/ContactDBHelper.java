@@ -3,7 +3,6 @@ package com.example.mycontactlist;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class ContactDBHelper extends SQLiteOpenHelper { // The recommended approach to using SQLite in an Android app is to create a
     // Database Helper class whose only function is to provide for the creation, modification, and deletion of tables in the database.
