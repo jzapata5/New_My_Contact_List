@@ -1,6 +1,5 @@
  package com.example.mycontactlist;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -12,9 +11,12 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
 import android.text.InputType;
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
     private Contact currentContact;
     final int PERMISSION_REQUEST_PHONE = 102;
+    final int PERMISSION_REQUEST_CAMERA = 103;
+    final int CAMERA_REQUEST = 1888;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,53 +60,55 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         initSettingsButton();
         initChangeDateButton();
         initCallFunction();
-
+        initImageButton();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) { //this is when you click on someone's contact via List
             initContact(extras.getInt("contactId"));
-        } else {
+
+        }
+        else {
             currentContact = new Contact(); // this will be for the start menu
+
         }
 
         setForEditing(false);
         initTextChangedEvents();
         initSaveButton();
 
-
     }
 
     private void initListButton() {
         ImageButton contactList = findViewById(R.id.imageButtonList); // Variable to hold the ImageButton
-        // listener belongs to  ImageButton that allows it to responds
+        // Listener is added to the ImageButton to make it respond to different things
         contactList.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ContactListActivity.class); // A mew Intent is created, the Intent's constructors requires reference to the current activity and know what activity to start
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Intent flag is alert the op system to not create more than 1 copy
-            startActivity(intent);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // An Intent flag is set to alert the operating system to not make multiple copes of the same activity
+            startActivity(intent); // And listen
         });
     }
 
     private void initMapButton() {
-        ImageButton contactList = findViewById(R.id.imageButtonMap);
+        ImageButton contactList = findViewById(R.id.imageButtonMap); // Same as above
         contactList.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ContactMapActivity.class);
-            if (currentContact.getContactID() == -1) {
+            if(currentContact.getContactID() == -1) {
                 Toast.makeText(getBaseContext(), "Contact must be saved before it can be mapped", Toast.LENGTH_LONG).show();
-            } else {
-                intent.putExtra("contactid", currentContact.getContactID());
+            }
+            else {
+                intent.putExtra("contactId", currentContact.getContactID());
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-            setForEditing(false);
         });
     }
 
     private void initSettingsButton() {
-        ImageButton contactList = findViewById(R.id.imageButtonSettings);
+        ImageButton contactList = findViewById(R.id.imageButtonSettings); // Same as above
         contactList.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ContactSettingsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+            startActivity(intent); // And listen
         });
     }
 
@@ -133,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editStreetAddress.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // This code is executed when the user ends editing of the EditText.
+                 // This code is executed when the user ends editing of the EditText.
             }
 
             @Override
@@ -264,11 +270,13 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
                 if (wasSuccessful) {
                     int newID = dataSource.getLastContactID();
                     currentContact.setContactID(newID);
-                } else {
+                }
+                else {
                     wasSuccessful = dataSource.updateContact(currentContact); // if it does exist, then just update it
                 }
                 dataSource.close();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 wasSuccessful = false;
             }
             if (wasSuccessful) {
@@ -306,16 +314,23 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         EditText editState = findViewById(R.id.editState);
         EditText editZipCode = findViewById(R.id.editZipCode);
         EditText editHome = findViewById(R.id.editHome);
-        EditText editCell = findViewById(R.id.editCell);
+        EditText editCell= findViewById(R.id.editCell);
         EditText editEmail = findViewById(R.id.editEmail);
         Button buttonChange = findViewById(R.id.btnBirthday);
         Button buttonSave = findViewById(R.id.buttonSave);
+
+        //for camera
+        ImageButton picture = findViewById(R.id.imageContact);
+        picture.setEnabled(enabled);
+        //
 
         editName.setEnabled(enabled);
         editAddress.setEnabled(enabled);
         editCity.setEnabled(enabled);
         editState.setEnabled(enabled);
         editZipCode.setEnabled(enabled);
+        editHome.setEnabled(enabled);
+        editCell.setEnabled(enabled);
         editEmail.setEnabled(enabled);
         buttonChange.setEnabled(enabled);
         buttonSave.setEnabled(enabled);
@@ -324,7 +339,8 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
             editName.requestFocus();
             editHome.setInputType(InputType.TYPE_CLASS_PHONE);
             editCell.setInputType(InputType.TYPE_CLASS_PHONE);
-        } else {
+        }
+        else {
             ScrollView s = findViewById(R.id.scrollView);
             s.fullScroll(ScrollView.FOCUS_UP);
             editHome.setInputType(InputType.TYPE_NULL);
@@ -345,7 +361,6 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
     @Override
     public void didFinishDatePickerDialog(Calendar selectedTime) {
         TextView birthDay = findViewById(R.id.textBirthday);
-        Log.i("Hello there", "hello");
         birthDay.setText(DateFormat.format("MM/dd/yyyy", selectedTime));
         currentContact.setBirthday(selectedTime);
     }
@@ -357,10 +372,10 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         try {
             ds.open();
             currentContact = ds.getSpecifiedContact(id);
-            Log.i("tag", "-----------------------------------------\n");
 
             ds.close();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Toast.makeText(this, "Load contact failed", Toast.LENGTH_LONG).show();
         }
 
@@ -370,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         EditText editState = findViewById(R.id.editState);
         EditText editZipCode = findViewById(R.id.editZipCode);
         EditText editHome = findViewById(R.id.editHome);
-        EditText editCell = findViewById(R.id.editCell);
+        EditText editCell= findViewById(R.id.editCell);
         EditText editEmail = findViewById(R.id.editEmail);
         TextView birthDay = findViewById(R.id.textBirthday);
 
@@ -382,7 +397,15 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
         editHome.setText(currentContact.getPhoneNumber());
         editCell.setText(currentContact.getCellNumber());
         editEmail.setText(currentContact.getEmail());
-        birthDay.setText(DateFormat.format("MM/dd/yyyy", currentContact.getBirthday().getTimeInMillis()).toString());
+        birthDay.setText(DateFormat.format("MM/dd/yyyy",currentContact.getBirthday().getTimeInMillis()).toString());
+
+        ImageButton picture = (ImageButton) findViewById(R.id.imageContact);
+        if (currentContact.getPicture() != null) {
+            picture.setImageBitmap(currentContact.getPicture());
+        }
+        else {
+            picture.setImageResource(R.drawable.addgroup);
+        }
     }
 
     private void initCallFunction() {
@@ -407,44 +430,40 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
 
     private void checkPhonePermission(String phoneNumber) {
         if (Build.VERSION.SDK_INT >= 23) {
-
-            //sees if permission has already been granted and show location
-            if (ContextCompat.checkSelfPermission(MainActivity.this,
-                    Manifest.permission.CALL_PHONE) !=
+            if (ContextCompat.checkSelfPermission(MainActivity.this, //this whole block checks if permission was already given before
+                    Manifest.permission.CALL_PHONE) != //if so, show location
                     PackageManager.PERMISSION_GRANTED) {
-
-                //if permission denied, explain why it's needed
-                if (ActivityCompat.shouldShowRequestPermissionRationale
+                if (ActivityCompat.shouldShowRequestPermissionRationale // this block sees if permission has been denied before, if it has, then it'll explain why permission is needed
                         (MainActivity.this,
                                 Manifest.permission.CALL_PHONE)) {
-
                     Snackbar.make(findViewById(R.id.name), // this whole block asks for permission
                             "MyContactList requires this permission to call from " +
                                     "your contacts", Snackbar.LENGTH_INDEFINITE)
                             .setAction("Ok", new View.OnClickListener() {
-
-
                                 @Override
-                                public void onClick(View view) {
+                                public void onClick (View view) {
                                     ActivityCompat.requestPermissions(
                                             MainActivity.this,
                                             new String[]{Manifest.permission.CALL_PHONE},
                                             PERMISSION_REQUEST_PHONE);
                                 }
                             }).show();
-                } else {
+                }
+                else {
                     ActivityCompat.requestPermissions(
                             MainActivity.this,
                             new String[]{Manifest.permission.CALL_PHONE},
                             PERMISSION_REQUEST_PHONE);
                 }
-            } else {
+            }
+            else {
                 callContact(phoneNumber);
             }
-        } else {
-            callContact(phoneNumber);
         }
-    }
+        else {
+            callContact(phoneNumber);
+            }
+        }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -452,25 +471,93 @@ public class MainActivity extends AppCompatActivity implements SaveDateListener 
             case PERMISSION_REQUEST_PHONE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(MainActivity.this, "You may now call from this app.", Toast.LENGTH_LONG).show();
-                } else {
+                }
+                else {
                     Toast.makeText(MainActivity.this, "You may not call from this app.", Toast.LENGTH_LONG).show();
                 }
             }
-
+            case PERMISSION_REQUEST_CAMERA: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    takePhoto();
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "You may not call from this app.", Toast.LENGTH_LONG).show();
+                }
+            }
+            return;
         }
-
     }
 
-    private void callContact(String phoneNumber) {
+    private void callContact (String phoneNumber) {
         Intent intent = new Intent(Intent.ACTION_CALL);
         intent.setData(Uri.parse("tel: " + phoneNumber));
 
-        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(getBaseContext(),
-                android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             return;
-        } else {
+        }
+        else {
             startActivity(intent);
 
+        }
+    }
+
+    private void initImageButton() {
+        ImageButton ib = findViewById(R.id.imageContact);
+        ib.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, //this whole block checks if permission was already given before
+                            Manifest.permission.CAMERA) != //if so, show location
+                            PackageManager.PERMISSION_GRANTED) {
+                        if (ActivityCompat.shouldShowRequestPermissionRationale // this block sees if permission has been denied before, if it has, then it'll explain why permission is needed
+                                (MainActivity.this,
+                                        Manifest.permission.CAMERA)) {
+                            Snackbar.make(findViewById(R.id.name), // this whole block asks for permission
+                                    "MyContactList requires this permission to take pictures ", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Ok", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick (View view) {
+                                            ActivityCompat.requestPermissions(
+                                                    MainActivity.this,
+                                                    new String[]{Manifest.permission.CAMERA},
+                                                    PERMISSION_REQUEST_CAMERA);
+                                        }
+                                    }).show();
+                        }
+                        else {
+                            ActivityCompat.requestPermissions(
+                                    MainActivity.this,
+                                    new String[]{Manifest.permission.CAMERA},
+                                    PERMISSION_REQUEST_CAMERA);
+                        }
+                    }
+                    else {
+                        takePhoto();
+                    }
+                }
+                else {
+                    takePhoto();
+                }
+            }
+        });
+    }
+
+    public void takePhoto() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                Bitmap scaledPhoto = Bitmap.createScaledBitmap(photo, 144, 144, true);
+                ImageButton imageContact = (ImageButton) findViewById(R.id.imageContact);
+                imageContact.setImageBitmap(scaledPhoto);
+                currentContact.setPicture(scaledPhoto);
+            }
         }
     }
 }
