@@ -74,6 +74,7 @@ public class ContactDataSource {
                 byte[] photo = boas.toByteArray();
                 updateValues.put("contactphoto", photo);
             }
+
             updateValues.put("contactname", c.getContactName());
             updateValues.put("streetaddress", c.getStreetAddress());
             updateValues.put("city", c.getCity());
@@ -186,6 +187,7 @@ public class ContactDataSource {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(cursor.getString(9)));
             contact.setBirthday(calendar);
+
             byte[] photo = cursor.getBlob(10);
             if(photo != null) {
                 ByteArrayInputStream imageStream = new ByteArrayInputStream(photo);

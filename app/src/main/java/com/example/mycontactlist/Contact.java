@@ -17,14 +17,6 @@ public class Contact {
     private Calendar birthday;
     private Bitmap picture;
 
-    public Bitmap getPicture() {
-        return picture;
-    }
-
-    public void setPicture(Bitmap picture) {
-        this.picture = picture;
-    }
-
     public Contact() {
         contactID = -1;
         birthday= Calendar.getInstance();
@@ -108,5 +100,12 @@ public class Contact {
 
     public void setBirthday(Calendar birthday) {
         this.birthday = birthday;
+    }
+
+    public void setPicture(Bitmap b) {
+        picture = b;
+    }
+    public Bitmap getPicture() {
+        return picture;
     }
 }

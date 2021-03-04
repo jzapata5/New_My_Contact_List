@@ -12,9 +12,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 public class ContactAdapter extends RecyclerView.Adapter{
@@ -27,21 +24,23 @@ public class ContactAdapter extends RecyclerView.Adapter{
 
         public TextView textViewContact;
         public TextView textPhone;
-        public TextView textAddress;
+        public TextView textStreetAddress;
+        public TextView textCity;
+        public TextView textState;
+        public TextView textZipCode;
         public Button deleteButton;
 
         public ContactViewHolder(@NonNull View itemView) { // @NonNull means that the parameter cannot be null
             super(itemView);
             textViewContact = itemView.findViewById(R.id.textContactName);
             textPhone = itemView.findViewById(R.id.textPhoneNumber);
-            textAddress = itemView.findViewById(R.id.textStreetAddress);
+            textStreetAddress = itemView.findViewById(R.id.textStreetAddress);
+            textCity = itemView.findViewById(R.id.textViewCity);
+            textState = itemView.findViewById(R.id.textViewState);
+            textZipCode = itemView.findViewById(R.id.textViewZipCode);
             deleteButton = itemView.findViewById(R.id.buttonDeleteContact);
             itemView.setTag(this);
             itemView.setOnClickListener(mOnItemClickListener);
-        }
-
-        public TextView getStreetAddressTextView() {
-            return textAddress;
         }
 
         public TextView getContactTextView() {
@@ -50,6 +49,23 @@ public class ContactAdapter extends RecyclerView.Adapter{
 
         public TextView getPhoneTextView() {
             return textPhone;
+        }
+
+        public TextView getTextStreetAddress() {
+            return textStreetAddress;
+        }
+
+        public TextView getTextCity() {
+            return textCity;
+        }
+
+        public TextView getTextState() {
+            return textState;
+        }
+
+
+        public TextView getTextZipCode() {
+            return textZipCode;
         }
 
         public Button getDeleteButton() {
@@ -81,20 +97,27 @@ public class ContactAdapter extends RecyclerView.Adapter{
 
         cvh.getContactTextView().setText(contactData.get(position).getContactName());
         cvh.getPhoneTextView().setText(contactData.get(position).getPhoneNumber());
-        cvh.getStreetAddressTextView().setText( contactData.get(position).getStreetAddress() + ", " +
-                                                contactData.get(position).getCity() + ", " +
-                                                contactData.get(position).getState() + ", " +
-                                                contactData.get(position).getZipCode());
+        cvh.getTextStreetAddress().setText(contactData.get(position).getStreetAddress());
+        cvh.getTextCity().setText(contactData.get(position).getCity());
+        cvh.getTextState().setText(contactData.get(position).getState());
+        cvh.getTextZipCode().setText(contactData.get(position).getZipCode());
+
+        //position in the list is even
+        if (position % 2 == 0) {
+            cvh.getContactTextView().setTextColor(Color.RED);
+        }
+        else {
+            cvh.getContactTextView().setTextColor(Color.BLUE);
+        }
 
         if (isDeleting) {
             cvh.getDeleteButton().setVisibility(View.VISIBLE);
-            cvh.getDeleteButton().setOnClickListener(view -> {
-                deleteItem(position);
-            });
+            cvh.getDeleteButton().setOnClickListener(view -> deleteItem(position));
         }
         else {
             cvh.getDeleteButton().setVisibility(View.INVISIBLE);
         }
+
     }
 
     @Override

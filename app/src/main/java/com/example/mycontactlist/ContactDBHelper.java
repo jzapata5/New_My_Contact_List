@@ -3,12 +3,13 @@ package com.example.mycontactlist;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class ContactDBHelper extends SQLiteOpenHelper { // The recommended approach to using SQLite in an Android app is to create a
     // Database Helper class whose only function is to provide for the creation, modification, and deletion of tables in the database.
 
     private static final String DATABASE_NAME = "mycontacts.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 2;
     private static final String CREATE_TABLE_CONTACT = "CREATE TABLE contact(" +
                                                         "_id integer primary key autoincrement," +
                                                         "contactname text not null, " +
@@ -18,9 +19,7 @@ public class ContactDBHelper extends SQLiteOpenHelper { // The recommended appro
                                                         "zipcode text, " +
                                                         "phonenumber text," +
                                                         "cellnumber text," +
-                                                        "email text, " +
-                                                        "birthday text," +
-                                                        "contactphoto blob);";
+                                                        "email text, birthday text, contactphoto blob);";
     public ContactDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -32,14 +31,17 @@ public class ContactDBHelper extends SQLiteOpenHelper { // The recommended appro
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//        Log.w(ContactDBHelper.class.getName(),
-//                "Upgrading db from version" + oldVersion + " to " + newVersion + ", which will destroy all old data.");
-//        db.execSQL("DROP TABLE IF EXISTS contact");
-//        onCreate(db);
+       // Log.w(ContactDBHelper.class.getName(),
+      //          "Upgrading db from version" + oldVersion + " to " + newVersion + ", which will destroy all old data.");
+        //db.execSQL("DROP TABLE IF EXISTS contact");
+        //onCreate(db);
+
         try {
             db.execSQL("ALTER TABLE contact ADD COLUMN contactphoto blob");
         }
+
         catch (Exception e) {
+            //do nothing
         }
     }
 }
